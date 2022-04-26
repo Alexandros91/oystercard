@@ -8,7 +8,7 @@ class Oystercard
 
   def initialize
     @balance = 0
-    @status = "not_in_use"
+    @status = false
   end
 
   def top_up(money)
@@ -23,15 +23,15 @@ class Oystercard
   def touch_in
     fail "Balance is less than £1" if @balance < MINIMUM_AMOUNT
     fail 'Oyster already touched in' if in_journey?
-    @status = "in_use"
+    @status = true
   end
 
   def touch_out
     fail 'Oyster not touched in' if !in_journey?
-    @status = "not_in_use"
+    @status = false
   end
 
   def in_journey?
-    @status == "in_use"
+    @status == true
   end
 end
