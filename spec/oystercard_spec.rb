@@ -1,6 +1,9 @@
 require 'oystercard'
 
 describe Oystercard do
+
+  let(:station){ double :station}
+
   it 'initializes new card' do
     expect(Oystercard.new).to be_an_instance_of(Oystercard)
   end
@@ -30,13 +33,13 @@ describe Oystercard do
   end
 
   it 'responds to touch_in method' do
-    expect(Oystercard.new).to respond_to(:touch_in)
+    expect(Oystercard.new).to respond_to(:touch_in).with(1).argument
   end
 
   it 'status changes to true when card touched in' do
     oyster = Oystercard.new
     oyster.top_up(5)
-    oyster.touch_in
+    oyster.touch_in(station)
     expect(oyster.status).to eq(true) 
   end
 
@@ -52,7 +55,7 @@ describe Oystercard do
   it 'raises error at touch_in if card already in use' do
     oyster = Oystercard.new
     oyster.top_up(5)
-    oyster.touch_in
+    oyster.touch_in(station)
     expect(oyster).to be_in_journey
   end
 
@@ -63,13 +66,20 @@ describe Oystercard do
 
   it "raises error if oystercard gets touched in with balance less than £1" do
     oyster = Oystercard.new
-    expect{ oyster.touch_in }.to raise_error("Balance is less than £1")
+    expect{ oyster.touch_in(station) }.to raise_error("Balance is less than £1")
   end
 
   it "reducts balance by the minimum charge when it is touched out" do
     oyster = Oystercard.new
     oyster.top_up(10)
-    oyster.touch_in
+    oyster.touch_in(station)
     expect{ oyster.touch_out}. to change { oyster.balance }.by(-Oystercard::MINIMUM_AMOUNT)
   end
+
+  it 'stores the entry station' do
+    subject.top_up(10)
+    subject.touch_in(station)
+    expect(subject.entry_station).to eq station
+  end  
+
 end
