@@ -41,7 +41,7 @@ class Oystercard
   private
 
   attr_reader :journey
-  
+
   def deduct(money)
     @balance -= money
   end
@@ -71,8 +71,7 @@ class Oystercard
   end
 
   def reset_stations
-    @entry_station = nil
-    @exit_station = nil
+    @journey = {}
   end
 
   def record_entry_station(station)
