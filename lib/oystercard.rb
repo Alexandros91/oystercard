@@ -6,6 +6,7 @@ class Oystercard
   
   MAXIMUM_CAPACITY = 90
   MINIMUM_AMOUNT = 1
+  MINIMUM_FARE = 1
 
   def initialize
     @balance = 0
@@ -29,7 +30,7 @@ class Oystercard
     fail 'Oyster not touched in' if !in_journey?
     @entry_station = nil
     @status = false
-    deduct(MINIMUM_AMOUNT)
+    deduct(MINIMUM_FARE)
   end
 
   def in_journey?
