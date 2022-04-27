@@ -1,10 +1,6 @@
 class Oystercard
 
-  attr_reader :balance
-  attr_reader :status
-  attr_reader :entry_station
-  attr_reader :exit_station
-  attr_reader :history
+  attr_reader :balance, :history
 
   MAXIMUM_CAPACITY = 90
   MINIMUM_AMOUNT = 1
@@ -12,40 +8,78 @@ class Oystercard
 
   def initialize
     @balance = 0
-    @status = false
     @entry_station = nil
+    @journey = {}
     @history = []
   end
 
   def top_up(money)
-    fail "Maximum balance of #{MAXIMUM_CAPACITY} exceeded" if balance + money > MAXIMUM_CAPACITY
-    @balance += money
+    check_if_maximum_balance_exceeded(money)
+    raise_balance(money)
   end
   
   def touch_in(station)
-    fail "Balance is less than £1" if @balance < MINIMUM_AMOUNT
-    fail 'Oyster already touched in' if in_journey?
-    @status = true
-    @entry_station = station
+    check_minimum_balance_for_travel
+    check_if_in_journey
+    record_entry_station(station)
   end
 
   def touch_out(station)
-    fail 'Oyster not touched in' if !in_journey?
-    @status = false
+    check_if_not_in_journey
     deduct(MINIMUM_FARE)
-    @exit_station = station
-    @history << {entry_station: @entry_station, exit_station: @exit_station}
-    @entry_station = nil
+    record_exit_station(station)
+    record_journey
+    reset_stations
   end
 
   def in_journey?
-    !!entry_station
+    !!@journey[:entry_station]
   end
 
 
 
   private
+
+  attr_reader :journey
+  
   def deduct(money)
     @balance -= money
+  end
+
+  def check_if_maximum_balance_exceeded(money)
+    fail "Maximum balance of #{MAXIMUM_CAPACITY} exceeded" if balance + money > MAXIMUM_CAPACITY
+  end
+
+  def raise_balance(money)
+    @balance += money
+  end
+
+  def check_minimum_balance_for_travel
+    fail "Balance is less than £1" if @balance < MINIMUM_AMOUNT
+  end
+
+  def check_if_in_journey
+    fail 'Oyster already touched in' if in_journey?
+  end
+
+  def check_if_not_in_journey
+    fail 'Oyster not touched in' if !in_journey?
+  end
+
+  def record_journey
+    @history << @journey
+  end
+
+  def reset_stations
+    @entry_station = nil
+    @exit_station = nil
+  end
+
+  def record_entry_station(station)
+    @journey[:entry_station] = station
+  end
+
+  def record_exit_station(station)
+    @journey[:exit_station] = station
   end
 end
