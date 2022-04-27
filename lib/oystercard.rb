@@ -3,7 +3,9 @@ class Oystercard
   attr_reader :balance
   attr_reader :status
   attr_reader :entry_station
-  
+  attr_reader :exit_station
+  attr_reader :history
+
   MAXIMUM_CAPACITY = 90
   MINIMUM_AMOUNT = 1
   MINIMUM_FARE = 1
@@ -12,6 +14,7 @@ class Oystercard
     @balance = 0
     @status = false
     @entry_station = nil
+    @history = []
   end
 
   def top_up(money)
@@ -26,16 +29,20 @@ class Oystercard
     @entry_station = station
   end
 
-  def touch_out
+  def touch_out(station)
     fail 'Oyster not touched in' if !in_journey?
-    @entry_station = nil
     @status = false
     deduct(MINIMUM_FARE)
+    @exit_station = station
+    @history << {entry_station: @entry_station, exit_station: @exit_station}
+    @entry_station = nil
   end
 
   def in_journey?
     !!entry_station
   end
+
+
 
   private
   def deduct(money)
