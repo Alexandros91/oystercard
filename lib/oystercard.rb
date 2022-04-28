@@ -75,6 +75,7 @@ class Oystercard
   end
 
   def record_entry_station(station)
+    @entry_station = station
     @journey[:entry_station] = station
   end
 
